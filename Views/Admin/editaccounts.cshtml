@@ -1,0 +1,142 @@
+﻿
+@{
+    ViewBag.Title = "editaccounts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="~/Content/assets/js/core/jquery.min.js"></script>
+    <link href="~/Content/assets/css/uploader.css" rel="stylesheet" />
+}
+
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <div class="row">
+                    <div class="col-sm-6 text-left">
+                        <h5 class="card-account">Dashboard</h5>
+                        <h2 class="card-title">Editing accounts</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="account-form" class="row">
+                    <div class="col-6">
+                        <div class="text-input">
+                            <label for="a-name" class="text-label">Account's name:</label>
+                            <input type="text" class="text-field" placeholder="Denim pant..." name="a-name" id='a-name'
+                                   required readonly/>
+                        </div>
+                        <div class="checkroles">
+                            <!-- <input type="checkbox" class="account-roles" name="a-roles" id ="a-roles">
+                            <label for="a-roles" class="text-label">Is this account for admins?</label>      -->
+                            <form>
+                                <label for="a-roles" class="text-label">Is this account for admins?</label>
+                                <input type="checkbox" id="a-roles" name="a-roles" value="true">
+                            </form>
+
+                        </div>
+
+                        <input class="submit-btn" type="submit" value="Edit account's information">
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Content/assets/js/uploader.js"></script>
+
+@*<script>
+    document.getElementById("file-upload").addEventListener("change", (e) => {
+        e.preventDefault();
+        handleSubmit();
+    })
+
+
+    const handleSubmit = () => {
+        const form = new FormData(document.getElementById("account-form"));
+        const image = form.get("fileUpload");
+        console.log(image);
+
+        const data = new FormData()
+        data.append("image", image)
+
+        fetch(
+            "https://api.imgbb.com/1/upload?key=c3a40ca387e441f23f30af59940c7ef2",
+            {
+                method: "POST",
+                body: data
+            }
+        ).then((res) => res.json())
+            .then((res) => {
+                console.log(res.data.url);
+                document.getElementById("a-image").value = res.data.url
+            })
+    }
+</script>*@
+
+<script>
+
+    $(document).ready(function () {
+        var url = new URL(window.location.href);
+        var accountID = url.searchParams.get("a-id");
+
+        //trường hợp không rỗng
+        var formData = new FormData();
+        formData.append("accountID", accountID);
+
+        $.ajax(
+            {
+                type: "POST",
+                data: formData,
+                contentType: "application/json; charset=utf-8",
+                url: window.location.origin + '/Admin/get_All_acc',
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (response) {
+                    var data = JSON.parse(response);
+                    console.log(data)
+                    document.getElementById("a-name").value = accountID
+
+                },
+                error: function (response) {
+                    alert("Xử lý lấy thông tin tài khoản cần sửa thất bại");
+                }
+            }
+        );
+    })
+</script>
+
+<script>
+    $(".submit-btn").click(function (e) {
+        e.preventDefault();
+        var url = new URL(window.location.href);
+        var accountID = url.searchParams.get("a-id");
+
+        var form = $('#account-form')[0];
+        var formData = new FormData(form);
+        formData.append("a-id", accountID);
+            $.ajax(
+                {
+                    type: "POST",
+                    data: formData,
+                    contentType: "application/json; charset=utf-8",
+                    url: window.location.origin + '/Admin/Edit_acc',
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    success: function (response) {
+                        alert(response);
+                        window.location = "accountviews";
+                    },
+                    error: function (response) {
+                        alert("Xử lý cập nhật thông tin tài khoản thất bại");
+                    }
+                }
+            );
+    })
+</script>
